@@ -27,7 +27,7 @@ class User(db.Model):
 class People(db.Model):
     __tablename__ = 'people'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50))
     height= db.Column(db.String(50))
     mass = db.Column(db.String(50))
     skin_color = db.Column(db.String(50))
@@ -35,7 +35,7 @@ class People(db.Model):
     eye_color = db.Column(db.String(50))
     birth_year = db.Column(db.String(50))
     gender = db.Column(db.String(50))
-    photoUrl = db.Column(db.String(500), nullable=False)
+    photoUrl = db.Column(db.String(500))
     Favorites = db.relationship('Favorites', lazy=True)
     def __repr__(self):
         return '<People %r>' % self.name
@@ -64,9 +64,10 @@ class Planets(db.Model):
     terrain = db.Column(db.String(50))
     climate = db.Column(db.String(50))
     gravity = db.Column(db.String(50))
-    eye_color = db.Column(db.String(50))
+    # eye_color = db.Column(db.String(50))
     surface_water = db.Column(db.String(50))
     orbital_period = db.Column(db.String(50))
+    rotation_period = db.Column(db.String(50))
     photoUrl = db.Column(db.String(500), nullable=False)
     Favorites = db.relationship('Favorites', lazy=True)
     def __repr__(self):
@@ -80,7 +81,7 @@ class Planets(db.Model):
             "terrain" : self.terrain,
             "climate" : self.climate,
             "gravity" : self.gravity,
-            "eye_color" : self.eye_color,
+            # "eye_color" : self.eye_color,
             "surface_water" : self.surface_water,
             "orbital_period" : self.orbital_period,
             "photoUrl" : self.photoUrl,
