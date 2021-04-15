@@ -2,6 +2,8 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+import json
+import datetime
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -36,10 +38,7 @@ def get_user():
     # get all the user
     result = User.query.all()
 
-    # map the results and your list of people  inside of the all_user variable
-    all_user= list(map(lambda x: x.serialize(), result))
-
-    return jsonify(all_user), 200
+    return jsonify(list(map(lambda x: x.serialize(), result))), 200
 
 
 @app.route('/user', methods=['POST'])
