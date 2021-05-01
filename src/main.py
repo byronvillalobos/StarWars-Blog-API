@@ -10,7 +10,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People, Favorites, Planets
+from models import db, User, People, Favorites, Planets, Vehicles
 #from models import Person
 
 app = Flask(__name__)
@@ -41,14 +41,15 @@ def get_user():
     return jsonify(list(map(lambda x: x.serialize(), result))), 200
 
 
-@app.route('/user', methods=['POST'])
-def add_user():
-    request_body = request.get_json()
-    user = User(fullName=request_body["fullName"],email=request_body["email"],password=request_body["password"],is_active=request_body["is_active"])
-    db.session.add(user)
-    db.session.commit()
-   
-    return jsonify({"Respuesta":"Los datos se almacenaron satisfactoriamente"}), 200
+# [GET] - Getting an spec. User [user]
+@app.route('/users/<int:id>', methods=['GET'])
+def GetUser(id):
+    user = User.query.get(id)
+
+    if user is None:
+        raise APIException('User not found.',status_code=403)
+
+    return jsonify(User.serialize(user)), 200
 
 
 @app.route('/user/<int:user_id>', methods=['PUT'])
@@ -83,6 +84,44 @@ def del_user(user_id):
    
     return jsonify({"Respuesta":"Los datos se eliminaron satisfactoriamente"}), 200
 
+# [POST] - Creating an [user]
+@app.route('/user/register', methods=['POST'])
+def storeUser():
+
+    data_request = request.get_json()
+
+    user = User.query.filter_by(email=data_request["email"]).first()
+    
+    # validating if email exists
+    if user:
+        return jsonify({"msg": "Emails is being used."}), 401
+
+    user = User(fullName = data_request["fullName"],
+    email = data_request["email"],
+    password = data_request["password"],
+    is_active = data_request["is_active"])
+
+    try:
+        db.session.add(user)
+        db.session.commit()
+        
+        return jsonify(User.serialize(user)), 201
+    
+    except AssertionError as exception_message: 
+        return jsonify(msg='Error: {}. '.format(exception_message)), 400
+
+
+# @app.route('/user', methods=['POST'])
+# def add_user():
+#     request_body = request.get_json()
+#     user = User(fullName = request_body["fullName"],
+#     email = request_body["email"],
+#     password = request_body["password"],
+#     is_active = request_body["is_active"])
+#     db.session.add(user)
+#     db.session.commit()
+   
+#     return jsonify({"User successfully added"}), 200
 
 
 # more methods
@@ -121,6 +160,28 @@ def handle_planets():
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])
 def handle_planetsid():
+
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+
+    return jsonify(response_body), 200
+
+
+
+@app.route('/vehicles', methods=['GET'])
+def handle_vehicles():
+    # get all the Vehicles
+    result = Vehicles.query.all()
+
+    # map the results and your list of vehicles  inside of the all_vehicle variable
+    all_vehicles= list(map(lambda x: x.serialize(), result))
+
+    return jsonify(all_vehicles), 200
+
+
+@app.route('/vehicles/<int:vehicle_id>', methods=['GET'])
+def handle_vehicleid():
 
     response_body = {
         "msg": "Hello, this is your GET /user response "

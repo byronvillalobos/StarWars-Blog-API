@@ -89,7 +89,29 @@ class Planets(db.Model):
             # do not serialize the password, its a security breach
         }
 
+class Vehicles(db.Model):
+    __tablename__ = 'vehicles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    model= db.Column(db.String(50))
+    vehicle_class = db.Column(db.String(50))
+    passengers = db.Column(db.String(50))
+    # photoUrl = db.Column(db.String(500), nullable=False)
+    Favorites = db.relationship('Favorites', lazy=True)
+    def __repr__(self):
+        return '<Vehicles %r>' % self.name
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "model": self.model,
+            "vehicle_class" : self.vehicle_class,
+            "passengers" : self.passengers,
+            # "photoUrl" : self.photoUrl,
+            "Favorites": list(map(lambda x: x.serialize(), self.Favorites))
+            # do not serialize the password, its a security breach
+        }
 
 class Favorites(db.Model):
     __tablename__ = 'Favorites'
@@ -97,7 +119,7 @@ class Favorites(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     planets_id = db.Column(db.Integer,db.ForeignKey("planets.id"))
     people_id = db.Column(db.Integer,db.ForeignKey("people.id"))
-
+    vehicles_id = db.Column(db.Integer,db.ForeignKey("vehicles.id"))
 
     def __repr__(self):
         return '<Favorites %r>' % self.id
@@ -109,5 +131,7 @@ class Favorites(db.Model):
             "user_id" : self.id_user,
             "planets_id" : self.planets_id,
             "people_id" : self.people_id,
+            "vehicles_id" : self.vehicles_id,
+
             # do not serialize the password, its a security breach
         }
